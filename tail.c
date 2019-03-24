@@ -36,14 +36,6 @@ int main(int argc, char *argv[]) {
             }
             break;
 
-        case 4:
-
-            /* TODO cannot fall through */
-            source = fopen(argv[3], "r");
-            if (source == NULL) {
-                fprintf(stderr, "Error: could not open file '%s'\n", argv[1]);
-                return 1;
-            }
             
         case 3:
             if (strcmp("-n", argv[1])) {
@@ -71,6 +63,35 @@ int main(int argc, char *argv[]) {
             source = stdin;
             break;
 
+        case 4:
+            if (strcmp("-n", argv[1])) {
+                fprintf(stderr, "Error: unknown program argument '%s'\n", argv[1]);
+                return 1;
+            }
+
+            if (argv[2][0] == '+')
+                plus = true;
+            if (argv[2][0] == '-') {
+                fprintf(stderr, "Error: the argument '-n' does \
+                        not accept negative values\n");
+                return 1;
+            }
+
+
+            n = strtoul(argv[2], &endptr, 10);
+
+            if (strcmp(endptr, "")) {
+                fprintf(stderr, "Error: parameter of '-n' is not decimal:'%s'\n", argv[2]);
+                return 1;
+            }
+
+            /* TODO cannot fall through */
+            source = fopen(argv[3], "r");
+            if (source == NULL) {
+                fprintf(stderr, "Error: could not open file '%s'\n", argv[1]);
+                return 1;
+            }
+
         default:
             break;
     }
@@ -79,6 +100,15 @@ int main(int argc, char *argv[]) {
         return 0;
     
     if (plus == true) {
+        char line[LINE_LIMIT] = {0};
+
+        for (unsigned long i = 0; i < n; i++) {
+            fgets(line, LINE_LIMIT, source);
+        }
+
+        while (fgets(line, LINE_LIMIT, source)) {
+            printf("%s", line);
+        }
 
     } else {
 
@@ -117,8 +147,6 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(source);
-
-
 
     return 0;
 }

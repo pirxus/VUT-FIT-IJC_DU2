@@ -190,12 +190,12 @@ void freeCircleBuffer(cBuffer_t buffer) {
 }
 
 int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bool *plus) {
-    switch (argc) {
-        case 1:
-            *source = stdin;
-            break;
+        char *endptr = NULL;
 
-        case 2:
+        if (argc == 1) {
+            *source = stdin;
+
+        } else if (argc == 2) {
             if (!strcmp("-n", argv[1])) {
                 fprintf(stderr, "Error: option '-n' requires an argument\n");
                 return 1;
@@ -206,10 +206,8 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
                 fprintf(stderr, "Error: could not open file '%s'\n", argv[1]);
                 return 1;
             }
-            break;
-
             
-        case 3:
+        } else if (argc == 3) {
             if (strcmp("-n", argv[1])) {
                 fprintf(stderr, "Error: unknown program argument '%s'\n", argv[1]);
                 return 1;
@@ -224,7 +222,6 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
             }
 
 
-            char *endptr = NULL;
             *n = strtoul(argv[2], &endptr, 10);
 
             if (strcmp(endptr, "")) {
@@ -233,9 +230,8 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
             }
 
             *source = stdin;
-            break;
 
-        case 4:
+        } else if (argc == 4) {
             if (strcmp("-n", argv[1])) {
                 fprintf(stderr, "Error: unknown program argument '%s'\n", argv[1]);
                 return 1;
@@ -262,8 +258,9 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
                 return 1;
             }
 
-        default:
-            break;
+        } else {
+            fprintf(stderr, "Error: Too many program arguments\n");
+            return 1;
     }
     return 0;
 }

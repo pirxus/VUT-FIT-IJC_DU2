@@ -12,6 +12,16 @@
 
 #define LINE_LIMIT 1024
 
+struct cBuffer{
+    char **buffers;
+    unsigned itemCount;
+};
+
+typedef cBuffer *cBuffer_t;
+
+cBuffer_t initCircleBuffer(unsigned itemCount);
+void freeCircleBuffer(cBuffer_t *buffer);
+
 int main(int argc, char *argv[]) {
 
     FILE *source;
@@ -112,36 +122,30 @@ int main(int argc, char *argv[]) {
 
     } else {
 
-        char **cycleLines = malloc(sizeof(char *) * n);
-        if (cycleLines == NULL) {
-            fprintf(stderr, "Error: could not allocate memory for line storage\n");
+        cBuffer_t lineBuffer = initCircleBuffer(n);
+        if (lineBuffer == NULL) {
+            freeCircleBuffer(lineBuffer);
             fclose(source);
             return 1;
         }
 
-        /* alloc memory for the cycle buffer */
-        for (unsigned long i = 0; i < n; i++) {
-            cycleLines[i] = calloc(LINE_LIMIT, 1);
-            if (cycleLines[i] == NULL) {
-                fprintf(stderr, "Error: could not allocate memory for line storage\n");
-                fclose(source);
-                return 1;
-            }
-        }
 
+        int startIndex = 0;
         bool checkLineLength = true;
         for (int i = 0; fgets(cycleLines[i % n], LINE_LIMIT, source) != NULL; i++) {
+            startIndex = i + 1;
 
             if (checkLineLength == true && cycleLines[i % n][LINE_LIMIT - 2] != '\0' &&
                 cycleLines[i % n][LINE_LIMIT - 2] != '\n') {
                 fprintf(stderr, "Warning: some of the lines have exceeded the \
                         length limit of 1024 characters\n");
+                checkLineLength = false;
             }
         }
 
         for (unsigned long i = 0; i < n; i++) {
-            printf("%s", cycleLines[i % n]);
-            free(cycleLines[i % n]);
+            printf("%s", cycleLines[(i + startIndex) % n]);
+            free(cycleLines[(i + startIndex) % n]);
         }
         free(cycleLines);
     }
@@ -149,4 +153,45 @@ int main(int argc, char *argv[]) {
     fclose(source);
 
     return 0;
+}
+
+
+
+cBuffer_t initCircleBuffer(unsigned itemCount) {
+
+    cBuffer_t new = malloc(sizeof(struct cBuffer));
+    if (new == NULL) {
+        fprintf(stderr, "Error: could not allocate memory for line storage\n");
+        return NULL;
+    }
+
+    new->itemCount = 0;
+
+    new->buffers = malloc(sizeof(char*) * n);
+    if (new->buffers == NULL) {
+        fprintf(stderr, "Error: could not allocate memory for line storage\n");
+        return NULL;
+    }
+
+    for (int i = 0; i < itemCount; i++) {
+        new->buffers[i] = malloc(sizeof(char*) * LINE_LIMIT);
+        if (new->buffers == NULL) {
+            fprintf(stderr, "Error: could not allocate memory for line storage\n");
+            return NULL;
+        }
+        new->itemCount++;
+    }
+
+    return new;
+}
+
+void freeCircleBuffer(cBuffer_t buffer) {
+    if (buffer != NULL) {
+
+        for (int i = 0; i < buffer->itemCount; i++)
+            free(buffer->buffers[i]);
+
+        free(buffer->buffers);
+        free(buffer);
+    }
 }

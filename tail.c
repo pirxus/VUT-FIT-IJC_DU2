@@ -1,8 +1,9 @@
 /**
- * @file tail.c
- * @author
- * @date
- * @note
+ *	@file	tail.c
+ *	@author	Simon Sedlacek, FIT
+ *	@date	28.3.2019
+ *	@note	Reseni: IJC-DU2, priklad 1a)
+ *	Prelozeno: gcc 8.3.1 - Fedora release 29 (Twenty Nine) x86_64 
  */
 
 #include <stdio.h>
@@ -10,31 +11,45 @@
 #include <stdbool.h>
 #include <string.h>
 
+/** @brief Implementation limit for source line lenght */
 #define LINE_LIMIT 1024
 
-struct cBuffer{
+/** @brief Structure implementing the buffer for storing loaded lines */
+typedef struct cBuffer{
     char **buffers;
     unsigned itemCount;
-};
+} *cBuffer_t;
 
-typedef struct cBuffer *cBuffer_t;
 
+/** @brief Initializes the circle buffer */
 cBuffer_t initCircleBuffer(unsigned itemCount);
-void freeCircleBuffer(cBuffer_t buffer);
-void clearLine(char *line);
-void nextLine(FILE *source);
-int readLine(char *line, FILE *source);
-int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bool *plus);
 
+/** @brief Frees the memory allocated for the circle buffer */
+void freeCircleBuffer(cBuffer_t buffer);
+
+/** @brief Sets the value of each character in an array to zero */
+void clearLine(char *line);
+
+/** @brief Skips to the next line */
+void nextLine(FILE *source);
+
+/** @brief Reads at most LINE_LIMIT - 1 character from a file and stores them */
+int readLine(char *line, FILE *source);
+
+/** @brief Parses the arguments for the program */
+int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bool *plus);
 
 
 int main(int argc, char *argv[]) {
 
     FILE *source;
+
+    /* In posix tail, adding plus to the number after the '-n' argument makes
+     * the program start printing the lines from that particular line number */
     bool plus = false;
+
+    /* Indicates either the number of lines to be printed, or the starting line index */
     unsigned n = 10;
-    bool checkLineLength = true;
-    int readStatus;
 
     if (parseProgramArguments(argc, argv, &source, &n, &plus) == 1)
         return 1;
@@ -44,26 +59,31 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     
+    /* Indicates whether there has been a line that exceeded the line length limit */
+    bool lineLengthExceededPrinted = false;
+    int readStatus;
+
     if (plus == true) {
         char line[LINE_LIMIT] = {0};
 
-        /* start the indexing from 1 because +0 and +1 options have to behave
+        /* Start indexing from 1 because +0 and +1 options have to behave
          * the same way */
         for (unsigned long i = 1; i < n; i++)
             nextLine(source);
 
         while ((readStatus = readLine(line, source)) != EOF) {
-            if (readStatus == 1 && checkLineLength == true) {
-                fprintf (stderr, "Warning: a line exceeded the line length\
-                        limit. Proceeding with potencially shortened lines.\n");
-                checkLineLength = false;
+
+            if (readStatus == 1 && lineLengthExceededPrinted == false) {
+                fprintf (stderr, "Warning: a line exceeded the line length "
+                        "limit. Proceeding with potencially shortened lines.\n");
+                lineLengthExceededPrinted = true;
             }
             printf("%s", line);
         }
 
     } else {
 
-        /* init the circle buffer for the given number of lines */
+        /* Init the circle buffer for the given number of lines */
         cBuffer_t lineBuffer = initCircleBuffer(n);
         if (lineBuffer == NULL) {
             fprintf(stderr, "Error: could not allocate memory for line storage\n");
@@ -72,20 +92,21 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
+        /* Indicates the position of the 'oldest' line in the buffer */
         int startIndex = 0;
 
         for (unsigned long i = 0;
                 (readStatus = readLine(lineBuffer->buffers[i % n], source)) != EOF;
                 startIndex = ++i){
 
-            if (readStatus == 1 && checkLineLength == true) {
-                fprintf (stderr, "Warning: a line exceeded the line length\
-                        limit. Proceeding with potencially shortened lines.\n");
-                checkLineLength = false;
+            if (readStatus == 1 && lineLengthExceededPrinted == false) {
+                fprintf (stderr, "Warning: a line exceeded the line length "
+                        "limit. Proceeding with potencially shortened lines.\n");
+                lineLengthExceededPrinted = true;
             }
         }
 
-        /* print all the stored lines */
+        /* Print all the stored lines */
         for (unsigned long i = 0; i < n; i++) {
             printf("%s", lineBuffer->buffers[(i + startIndex) % n]);
         }
@@ -97,8 +118,9 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-/* function definitions */
+
+/*============================================================*/
+/*                    Function definitions                    */
 
 
 void clearLine(char *line) {
@@ -112,6 +134,7 @@ int readLine(char *line, FILE *source) {
     int len = strlen(line);
 
     if (len == LINE_LIMIT - 1) {
+        line[LINE_LIMIT - 2] = '\n';
         nextLine(source);
         return 1;
     }
@@ -195,8 +218,8 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
             if (argv[2][0] == '+')
                 *plus = true;
             if (argv[2][0] == '-') {
-                fprintf(stderr, "Error: the argument '-n' does \
-                        not accept negative values\n");
+                fprintf(stderr, "Error: the argument '-n' does "
+                        "not accept negative values\n");
                 return 1;
             }
 
@@ -221,8 +244,8 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
             if (argv[2][0] == '+')
                 *plus = true;
             if (argv[2][0] == '-') {
-                fprintf(stderr, "Error: the argument '-n' does \
-                        not accept negative values\n");
+                fprintf(stderr, "Error: the argument '-n' does "
+                        "not accept negative values\n");
                 return 1;
             }
 

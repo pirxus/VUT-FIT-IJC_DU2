@@ -9,14 +9,14 @@
 CFLAGS= -std=c99 -Wall -Wextra -pedantic -g
 CPPFLAGS= -std=c++11 -Wall -Wextra -pedantic -g
 
-all: tail2 #tail
+all: tail2 tail
 
 # Targets for tail2.cc
 tail2: tail2.o
 	g++ $(CPPFLAGS) tail2.o -o tail2
 
 tail2.o: tail2.cc
-	g++ $(C{{FLAGS) -c -o tail2.o tail2.cc
+	g++ $(CPPFLAGS) -c -o tail2.o tail2.cc
 
 
 # Targets for tail.c

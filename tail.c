@@ -37,7 +37,14 @@ void nextLine(FILE *source);
 int readLine(char *line, FILE *source);
 
 /** @brief Parses the arguments for the program */
-int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bool *plus);
+int parseArguments(int argc, char *argv[], FILE **source, unsigned *n, bool *plus);
+
+/** @brief Prints the last n lines from a file */
+void tail(FILE *source, unsigned n, cBuffer_t lineBuffer);
+
+/** @brief Prints all the lines starting from line n */
+void tailPlus(FILE * source, unsigned n);
+
 
 
 int main(int argc, char *argv[]) {
@@ -51,35 +58,17 @@ int main(int argc, char *argv[]) {
     /* Indicates either the number of lines to be printed, or the starting line index */
     unsigned n = 10;
 
-    if (parseProgramArguments(argc, argv, &source, &n, &plus) == 1)
+    if (parseArguments(argc, argv, &source, &n, &plus) == 1)
         return 1;
 
     if (n == 0 && plus == false) {
         fclose(source);
         return 0;
     }
-    
-    /* Indicates whether there has been a line that exceeded the line length limit */
-    bool lineLengthExceededPrinted = false;
-    int readStatus;
 
     if (plus == true) {
-        char line[LINE_LIMIT] = {0};
 
-        /* Start indexing from 1 because +0 and +1 options have to behave
-         * the same way */
-        for (unsigned long i = 1; i < n; i++)
-            nextLine(source);
-
-        while ((readStatus = readLine(line, source)) != EOF) {
-
-            if (readStatus == 1 && lineLengthExceededPrinted == false) {
-                fprintf (stderr, "Warning: a line exceeded the line length "
-                        "limit. Proceeding with potencially shortened lines.\n");
-                lineLengthExceededPrinted = true;
-            }
-            printf("%s", line);
-        }
+        tailPlus(source, n);
 
     } else {
 
@@ -92,24 +81,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        /* Indicates the position of the 'oldest' line in the buffer */
-        int startIndex = 0;
-
-        for (unsigned long i = 0;
-                (readStatus = readLine(lineBuffer->buffers[i % n], source)) != EOF;
-                startIndex = ++i){
-
-            if (readStatus == 1 && lineLengthExceededPrinted == false) {
-                fprintf (stderr, "Warning: a line exceeded the line length "
-                        "limit. Proceeding with potencially shortened lines.\n");
-                lineLengthExceededPrinted = true;
-            }
-        }
-
-        /* Print all the stored lines */
-        for (unsigned long i = 0; i < n; i++) {
-            printf("%s", lineBuffer->buffers[(i + startIndex) % n]);
-        }
+        tail(source, n, lineBuffer);
 
         freeCircleBuffer(lineBuffer);
     }
@@ -122,6 +94,54 @@ int main(int argc, char *argv[]) {
 /*============================================================*/
 /*                    Function definitions                    */
 
+void tail(FILE *source, unsigned n, cBuffer_t lineBuffer) {
+
+    /* Indicates whether there has been a line that exceeded the line length limit */
+    bool lineLengthExceededPrinted = false;
+    int readStatus;
+
+    /* Indicates the position of the 'oldest' line in the buffer */
+    int startIndex = 0;
+
+    for (unsigned long i = 0;
+            (readStatus = readLine(lineBuffer->buffers[i % n], source)) != EOF;
+            startIndex = ++i){
+
+        if (readStatus == 1 && lineLengthExceededPrinted == false) {
+            fprintf (stderr, "Warning: a line exceeded the line length "
+                    "limit. Proceeding with potencially shortened lines.\n");
+            lineLengthExceededPrinted = true;
+        }
+    }
+
+    /* Print all the stored lines */
+    for (unsigned long i = 0; i < n; i++) {
+        printf("%s", lineBuffer->buffers[(i + startIndex) % n]);
+    }
+}
+
+void tailPlus(FILE * source, unsigned n) {
+
+    /* Indicates whether there has been a line that exceeded the line length limit */
+    bool lineLengthExceededPrinted = false;
+    int readStatus;
+    char line[LINE_LIMIT] = {0};
+
+    /* Start indexing from 1 because +0 and +1 options have to behave
+     * the same way */
+    for (unsigned long i = 1; i < n; i++)
+        nextLine(source);
+
+    while ((readStatus = readLine(line, source)) != EOF) {
+
+        if (readStatus == 1 && lineLengthExceededPrinted == false) {
+            fprintf (stderr, "Warning: a line exceeded the line length "
+                    "limit. Proceeding with potencially shortened lines.\n");
+            lineLengthExceededPrinted = true;
+        }
+        printf("%s", line);
+    }
+}
 
 void clearLine(char *line) {
     memset(line, 0, LINE_LIMIT);
@@ -189,17 +209,13 @@ void freeCircleBuffer(cBuffer_t buffer) {
     }
 }
 
-int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bool *plus) {
+int parseArguments(int argc, char *argv[], FILE **source, unsigned *n, bool *plus) {
         char *endptr = NULL;
 
         if (argc == 1) {
             *source = stdin;
 
         } else if (argc == 2) {
-            if (!strcmp("-n", argv[1])) {
-                fprintf(stderr, "Error: option '-n' requires an argument\n");
-                return 1;
-            }
 
             *source = fopen(argv[1], "r");
             if (*source == NULL) {
@@ -207,31 +223,7 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
                 return 1;
             }
             
-        } else if (argc == 3) {
-            if (strcmp("-n", argv[1])) {
-                fprintf(stderr, "Error: unknown program argument '%s'\n", argv[1]);
-                return 1;
-            }
-
-            if (argv[2][0] == '+')
-                *plus = true;
-            if (argv[2][0] == '-') {
-                fprintf(stderr, "Error: the argument '-n' does "
-                        "not accept negative values\n");
-                return 1;
-            }
-
-
-            *n = strtoul(argv[2], &endptr, 10);
-
-            if (strcmp(endptr, "")) {
-                fprintf(stderr, "Error: parameter of '-n' is not decimal:'%s'\n", argv[2]);
-                return 1;
-            }
-
-            *source = stdin;
-
-        } else if (argc == 4) {
+        } else if (argc == 3 || argc == 4) {
             if (strcmp("-n", argv[1])) {
                 fprintf(stderr, "Error: unknown program argument '%s'\n", argv[1]);
                 return 1;
@@ -252,10 +244,14 @@ int parseProgramArguments(int argc, char *argv[], FILE **source, unsigned *n, bo
                 return 1;
             }
 
-            *source = fopen(argv[3], "r");
-            if (*source == NULL) {
-                fprintf(stderr, "Error: could not open file '%s'\n", argv[1]);
-                return 1;
+            if (argc == 4) {
+                *source = fopen(argv[3], "r");
+                if (*source == NULL) {
+                    fprintf(stderr, "Error: could not open file '%s'\n", argv[3]);
+                    return 1;
+                }
+            } else {
+                *source = stdin;
             }
 
         } else {

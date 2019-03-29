@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
     } else {
 
         if (plus)
+
             tailPlus(cin, n);
         else
             tail(cin, n);
@@ -72,8 +73,8 @@ void tail(istream& source, unsigned n) {
     while (getline(source, line)) {
         if (lines.size() >= n) {
             lines.pop();
-            lines.push(line);
         }
+        lines.push(line);
     }
 
     while (!lines.empty()) {

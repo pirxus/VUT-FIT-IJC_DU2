@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-/** @brief Implementation limit for source line lenght */
+/** @brief Implementation limit for source line length */
 #define LINE_LIMIT 1024
 
 /** @brief Structure implementing the buffer for storing loaded lines */
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     FILE *source;
 
     /* In posix tail, adding plus to the number after the '-n' argument makes
-     * the program start printing the lines from that particular line number */
+     * the program start printing the file content from that particular line number */
     bool plus = false;
 
     /* Indicates either the number of lines to be printed, or the starting line index */

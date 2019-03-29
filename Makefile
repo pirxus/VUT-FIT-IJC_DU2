@@ -7,9 +7,10 @@
 #  NOTE:   Reseni: IJC-DU2
 #-------------------------------------------------
 CFLAGS= -std=c99 -Wall -Wextra -pedantic -g
-CPPFLAGS= -std=c++11 -Wall -Wextra -pedantic -g
+CPPFLAGS= -std=c++11 -O2 -Wall -Wextra -pedantic -g
 
-all: tail2 tail
+now: wordcnt wordcount
+all: tail2 tail wordcount
 
 # Targets for tail2.cc
 tail2: tail2.o
@@ -26,11 +27,26 @@ tail: tail.o
 tail.o: tail.c
 	gcc $(CFLAGS) -c -o tail.o tail.c
 
+# C wordcount
+wordcount: wordcount.o
+	gcc $(CFLAGS) wordcount.o -o wordcount
+
+wordcount.o: wordcount.cc
+	gcc $(CFLAGS) -c -o wordcount.o wordcount.c
+
+# CPP wordcount
+wordcnt: wordcnt.o
+	g++ $(CPPFLAGS) wordcnt.o -o wordcnt
+
+wordcnt.o: wordcount.cc
+	g++ $(CPPFLAGS) -c -o wordcnt.o wordcount.cc
+
+
 
 
 # Other targets
 .PHONY: clean
 
 clean:
-	rm -f *.o tail tail2
+	rm -f *.o tail tail2 wordcnt wordcount
 

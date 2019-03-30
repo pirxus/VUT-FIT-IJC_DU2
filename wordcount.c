@@ -8,8 +8,29 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include "io.h"
+
+
+#define WORD_LIMIT 128
 
 int main(void) {
+
+    char s[128] = {0};
+    int count = 0;
+    bool print_warning = true;
+
+    while ((count = get_word(s, WORD_LIMIT, stdin)) != EOF) {
+
+        if (count >= WORD_LIMIT && print_warning == true) {
+            print_warning = false;
+            fprintf(stderr, "Warning: Slovo prekrocilo limit delky slova, "
+                    "dalsi slova jsou potencialne zkracena\n");
+        }
+
+        printf("%s\n", s);
+    }
+
 
     return 0;
 }

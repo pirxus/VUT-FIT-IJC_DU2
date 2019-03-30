@@ -28,11 +28,14 @@ tail.o: tail.c
 	gcc $(CFLAGS) -c -o tail.o tail.c
 
 # C wordcount
-wordcount: wordcount.o
-	gcc $(CFLAGS) wordcount.o -o wordcount
+wordcount: wordcount.o io.o
+	gcc $(CFLAGS) wordcount.o io.o -o wordcount
 
-wordcount.o: wordcount.cc
+wordcount.o: wordcount.c
 	gcc $(CFLAGS) -c -o wordcount.o wordcount.c
+
+io.o: io.c io.h
+	gcc $(CFLAGS) -c -o io.o io.c
 
 # CPP wordcount
 wordcnt: wordcnt.o

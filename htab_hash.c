@@ -6,6 +6,7 @@
  *	Prelozeno: gcc 8.3.1 - Fedora release 29 (Twenty Nine) x86_64 
  */
 
+#include <stdint.h>
 #include "htab.h"
 
 unsigned int htab_hash_function(const char *str) {

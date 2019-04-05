@@ -28,8 +28,12 @@ int get_word(char *s, int max, FILE *f) {
         s[i] = c;
         i++;
         c = fgetc(f);
-        if (isspace(c) || c == EOF)
+        if (isspace(c))
             break;
+        if (c == EOF) {
+            fprintf(stderr, "Warning: soubor nebyl zakoncen znakem konce radku\n");
+            return EOF;
+        }
     }
 
     /* Zakoncime retezec */
@@ -42,7 +46,11 @@ int get_word(char *s, int max, FILE *f) {
         do {
             c = fgetc(f);
             overflow++;
-        } while (!isspace(c) && c != EOF);
+            if (c == EOF) {
+                fprintf(stderr, "Warning: soubor nebyl zakoncen znakem konce radku\n");
+                return EOF;
+            }
+        } while (!isspace(c));
     }
 
     return i + overflow;

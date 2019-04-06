@@ -9,7 +9,7 @@
 CFLAGS= -std=c99 -Wall -Wextra -pedantic -g
 #CPPFLAGS= -std=c++11 -O2 -Wall -Wextra -pedantic -g
 
-now: wordcount
+now: wordcount wordcnt
 all: tail2 tail wordcount
 
 # Targets for tail2.cc
@@ -37,7 +37,7 @@ wordcount.o: wordcount.c
 io.o: io.c io.h
 	gcc $(CFLAGS) -c -o io.o io.c
 
-libhtab.a: htab_hash.o htab_init.o htab_move.o htab_size.o htab_bucket_count.o htab_free.o htab_clear.o
+libhtab.a: htab_hash.o htab_init.o htab_move.o htab_size.o htab_bucket_count.o htab_free.o htab_clear.o htab_iterator_get.o
 	ar -rcv $@ $^
 
 # CPP wordcount
@@ -54,7 +54,7 @@ wordcnt.o: wordcount.cc
 .PHONY: clean
 
 clean:
-	rm -f *.o tail tail2 wordcnt wordcount
+	rm -f *.o tail tail2 wordcnt wordcount *.a *.so
 
 # OBJECT FILES
 htab_hash.o: htab_hash.c
@@ -71,4 +71,6 @@ htab_free.o: htab_free.c
 	gcc $(CFLAGS) -c -o htab_free.o htab_free.c   
 htab_clear.o: htab_clear.c
 	gcc $(CFLAGS) -c -o htab_clear.o htab_clear.c
+htab_iterator_get.o: htab_iterator_get.c
+	gcc $(CFLAGS) -c -o htab_iterator_get.o htab_iterator_get.c
 

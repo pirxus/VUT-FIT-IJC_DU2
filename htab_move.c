@@ -21,7 +21,7 @@ htab_t *htab_move(size_t n, htab_t *from) {
     new->size = from->size;
 
     /* Zkopirujeme seznamy do nove tabulky */
-    for (int i = 0; i < from->size; i++) {
+    for (size_t i = 0; i < from->size; i++) {
         new->array[i] = from->array[i];
         from->array[i] = NULL;
     }

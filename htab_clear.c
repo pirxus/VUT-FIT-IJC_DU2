@@ -20,11 +20,13 @@ void htab_clear(htab_t *t) {
     for (size_t i = 0; i < t->arr_size; i++) {
 
         /* Uvolnime obsah kazde polozky a nasledne polozku samotnou */
-        while (t->array[i]) {
+        while (t->array[i] != NULL) {
             next = t->array[i]->next;
             free(t->array[i]->key);
             free(t->array[i]);
             t->array[i] = next;
         }
     }
+
+    t->size = 0;
 }

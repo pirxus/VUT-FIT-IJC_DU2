@@ -25,7 +25,7 @@ struct htab {
  */
 struct htab_item {
     char *key;
-    size_t data;
+    int data;
     struct htab_item *next;
 };
 

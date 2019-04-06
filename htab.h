@@ -11,6 +11,7 @@
 
 #include <string.h>     // size_t
 #include <stdbool.h>    // bool
+#include <stdio.h>
 
 // tabulka:
 struct htab;    // neúplná deklarace struktury - uživatel nevidí obsah

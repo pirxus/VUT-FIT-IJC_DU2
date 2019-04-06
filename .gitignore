@@ -1,6 +1,9 @@
 # Binaries
 tail
 tail2
+wordcnt
+wordcount
+wordcount-dynamic
 
 # Useless text files
 test.txt

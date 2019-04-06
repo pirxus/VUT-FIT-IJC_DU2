@@ -10,8 +10,6 @@
 #include "htab.h"
 #include "htab_private.h"
 
-//TODO: use an iterator??
-
 void htab_clear(htab_t *t) {
     if (t == NULL)
         return;

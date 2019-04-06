@@ -13,8 +13,10 @@
 htab_t *htab_init(size_t n) {
     htab_t *new = malloc(sizeof(htab_t) + sizeof(struct htab_item *) * n);
 
-    if (new == NULL)
+    if (new == NULL) {
+        fprintf(stderr, "Error: nepodarilo se alokovat pamet pro tabulku\n");
         return NULL;
+    }
 
     new->size = 0;
     new->arr_size = n;

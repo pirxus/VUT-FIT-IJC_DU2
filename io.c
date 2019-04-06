@@ -15,43 +15,33 @@ int get_word(char *s, int max, FILE *f) {
     int c;
     int i = 0;
 
-    /* Preskocime bile znaky */
-    while ((c = fgetc(f))) {
+    /* Preskocime pripadne whitespace characters */
+    do {
+        c = fgetc(f);
         if (c == EOF)
             return EOF;
-        if (!isspace(c))
-            break;
-    }
-    
-    /* Nacteme slovo */
-    while (i < max) {
-        s[i] = c;
-        i++;
-        c = fgetc(f);
-        if (isspace(c))
-            break;
-        if (c == EOF) {
-            fprintf(stderr, "Warning: soubor nebyl zakoncen znakem konce radku\n");
-            return EOF;
-        }
-    }
+    } while(isspace(c));
 
-    /* Zakoncime retezec */
+    /* Nacteme jedno slovo a zakoncime nulovym bytem */
+    do {
+        s[i++] = c;
+        c = fgetc(f);
+        if (isspace(c) || c == EOF) {
+            s[i] = '\0';
+            return i;
+        }
+
+    } while (i < max - 1);
+
     s[i] = '\0';
 
-    /* Preskocime zbytek dlouheho slova */
+    /* Preskocime zbytek slova */
     int overflow = 0;
-    if (i == max) {
-        overflow = -1;
-        do {
-            c = fgetc(f);
-            overflow++;
-            if (c == EOF) {
-                fprintf(stderr, "Warning: soubor nebyl zakoncen znakem konce radku\n");
-                return EOF;
-            }
-        } while (!isspace(c));
+    while(!isspace(c = fgetc(f))) {
+        if (c == EOF)
+            return i;
+        overflow = 1;
     }
-
+    
     return i + overflow;
 }

@@ -34,8 +34,13 @@ int htab_iterator_set_value(htab_iterator_t it, int val) {
 }
 
 htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
+    if (t == NULL || key == NULL) {
+        fprintf(stderr, "Error: tabulka nebo klic neexistuji\n");
+        return htab_end(t);
+    }
+
     int index = (htab_hash_function(key) % t->arr_size);
-    htab_iterator_t it = {.ptr = t->array[index], .t = t, .idx = index};
+    htab_iterator_t it = { .ptr = t->array[index], .t = t, .idx = index };
 
     /* Projdeme cely seznam na danem indexu a zjistime, zda se v tabulce jiz
      * dane slovo nachazi */
@@ -44,14 +49,18 @@ htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
             it.ptr->data++;
             return it;
         }
-        htab_iterator_next(it);
+        it = htab_iterator_next(it);
     }
 
     /* Tabulka danou polozku neobsahovala, tudiz musime polozku pridat */
     it.ptr = malloc(sizeof(struct htab_item));
-    if (it.ptr == NULL)
+    if (it.ptr == NULL) {
+        fprintf(stderr, "Error: nepodarilo se vlozit klic do tabulky\n");
         return htab_end(t);
+    }
+
     it.ptr->key = malloc(strlen(key) + 1);
+
     if (htab_iterator_get_key(it) == NULL) {
         free(it.ptr);
         return htab_end(t);

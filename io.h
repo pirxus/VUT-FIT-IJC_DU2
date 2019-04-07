@@ -18,7 +18,7 @@
  * by delka slova mela presahnout zadane maximum, funkce zbytek slova preskoci
  *
  * @param s Retezec pro ulozeni slova
- * @param max Maximalni mozna delka slova, funkce nacita maximalne max-1 znaku
+ * @param max Funkce nacita az max - 1 znaku, pricemz max je delka pole s.
  * @param f Soubor, ze ktereho bude slovo nacteno
  *
  * @return Pocet nactenych znaku (pripadne cislo vetsi nez max pri prilis

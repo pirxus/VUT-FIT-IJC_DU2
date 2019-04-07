@@ -1,5 +1,5 @@
 /**
- *	@file	htab_bucket_count.c
+ *	@file	htab_free.c
  *	@author	Simon Sedlacek, FIT
  *	@date	5.4.2019
  *	@note	Reseni: IJC-DU2, priklad 2)

@@ -10,22 +10,42 @@
 #include "htab_private.h"
 
 htab_t *htab_move(size_t n, htab_t *from) {
-    if (from == NULL)
+    if (from == NULL || n == 0)
         return NULL;
 
     htab_t *new = htab_init(n);
 
-    if (new == NULL)
+    if (new == NULL) {
+        fprintf(stderr, "Error: nepodarilo se alokovat pamet "
+                "pro novou tabulku\n");
         return NULL;
-
-    new->size = from->size;
-
-    /* Zkopirujeme seznamy do nove tabulky */
-    for (size_t i = 0; i < from->size; i++) {
-        new->array[i] = from->array[i];
-        from->array[i] = NULL;
     }
 
-    from->size = 0;
+    /* Pomocne iteratory pro prochazeni puvodni tabulkou a
+     * kontrolu operace vlozeni zaznamu do nove tabulky */
+    htab_iterator_t iterator, check;
+
+    /* Vsechny polozky z puvodni tabulky postupne vlozime do nove tabulky */
+    for (iterator = htab_begin(from);
+            !htab_iterator_equal(htab_end(from), iterator);
+            iterator = htab_iterator_next(iterator)) {
+
+        if (!htab_iterator_valid(iterator))
+            continue;
+        else
+            check = htab_lookup_add(new, iterator.ptr->key);
+        
+        if (!htab_iterator_valid(check)) {
+            fprintf(stderr, "Error: nepodarilo se presunout polozku "
+                    "do nove tabulky\n");
+            htab_clear(new);
+            return NULL;
+        }
+
+        htab_iterator_set_value(check, htab_iterator_get_value(iterator));
+        new->size++;
+    }
+
+    htab_clear(from);
     return new;
 }

@@ -1,5 +1,5 @@
 /**
- *	@file	htab_bucket_count.c
+ *	@file	htab_clear.c
  *	@author	Simon Sedlacek, FIT
  *	@date	5.4.2019
  *	@note	Reseni: IJC-DU2, priklad 2)
@@ -15,9 +15,11 @@ void htab_clear(htab_t *t) {
         return;
 
     struct htab_item *next;
+
     for (size_t i = 0; i < t->arr_size; i++) {
 
-        /* Uvolnime obsah kazde polozky a nasledne polozku samotnou */
+        /* Uvolnime obsah kazdeho radku tabulky
+         * a nasledne radek samotny */
         while (t->array[i] != NULL) {
             next = t->array[i]->next;
             free(t->array[i]->key);

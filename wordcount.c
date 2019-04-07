@@ -16,6 +16,7 @@
 
 #define WORD_LIMIT 128
 #define ARRAY_SIZE 100
+#define NEW_ARRAY_SIZE 200 
 
 int main(void) {
 
@@ -25,9 +26,8 @@ int main(void) {
 
     htab_iterator_t iterator;
     htab_t *table = htab_init(ARRAY_SIZE);
-    if (table == NULL) {
+    if (table == NULL)
         return 1;
-    }
 
     /* Nacteme slova do tabulky */
     while ((count = get_word(s, WORD_LIMIT, stdin)) != EOF) {
@@ -44,6 +44,21 @@ int main(void) {
             return 1;
         }
     }
+
+#ifdef TEST
+    /* Test migrace tabulky do nove tabulky s jinou velikosti */
+
+    htab_t *new = htab_move(NEW_ARRAY_SIZE, table);
+
+    if (new == NULL) {
+        htab_free(table);
+        return 1;
+    }
+
+    htab_free(table);
+    table = new;
+
+#endif
 
     /* Vypiseme slova a pocty */
     for (iterator = htab_begin(table);

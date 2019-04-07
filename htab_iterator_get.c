@@ -49,6 +49,7 @@ htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
             it.ptr->data++;
             return it;
         }
+
         it = htab_iterator_next(it);
     }
 
@@ -77,9 +78,15 @@ htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
 htab_iterator_t htab_begin(const htab_t *t) {
     htab_iterator_t begin;
 
-    begin.ptr = t->array[0];
-    begin.t = t;
-    begin.idx = 0;
+    if (t == NULL) {
+        begin.ptr = NULL;
+        begin.t = NULL;
+        begin.idx = 0;
+    } else {
+        begin.ptr = t->array[0];
+        begin.t = t;
+        begin.idx = 0;
+    }
 
     return begin;
 }
@@ -88,8 +95,14 @@ htab_iterator_t htab_end(const htab_t *t) {
     htab_iterator_t end;
 
     end.ptr = NULL;
-    end.t = t;
-    end.idx = t->arr_size - 1;
+
+    if (t == NULL) {
+        end.t = NULL;
+        end.idx = 0;
+    } else {
+        end.t = t;
+        end.idx = t->arr_size - 1;
+    }
 
     return end;
 }

@@ -12,7 +12,15 @@
 #include "htab.h"
 
 /**
- * @brief
+ * @struct htab
+ * @brief Struktura hashovaci tabulky.
+ *
+ * @var size
+ * Aktualni pocet zaznamu v tabulce.
+ * @var arr_size
+ * Pocet radku tabulky.
+ * @var array
+ * Pole seznamu se zaznamy.
  */
 struct htab {
     size_t size;
@@ -21,7 +29,15 @@ struct htab {
 };
 
 /**
- * @brief
+ * @struct htab_item
+ * @brief Struktura zaznamu v hashovaci tabulce
+ *
+ * @var key
+ * Klic daneho zaznamu.
+ * @var data
+ * Pocet zaznamu vazajicich se k danemu klici.
+ * @var next
+ * Ukazatel na dalsi polozku seznamu.
  */
 struct htab_item {
     char *key;

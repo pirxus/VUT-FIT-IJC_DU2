@@ -9,8 +9,14 @@
 #include "io.h"
 
 int get_word(char *s, int max, FILE *f) {
+    /* Reseni okrajovych pripadu */
     if (f == NULL || s == NULL)
         return EOF;
+    if (max <= 1) {
+        if (max == 1)
+            s[0] = '\0';
+        return 0;
+    }
 
     int c;
     int i = 0;

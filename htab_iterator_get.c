@@ -1,7 +1,7 @@
 /**
  *	@file	htab_iterator_get.c
  *	@author	Simon Sedlacek, FIT
- *	@date	5.4.2019
+ *	@date	11.4.2019
  *	@note	Reseni: IJC-DU2, priklad 2)
  *	Prelozeno: gcc 8.3.1 - Fedora release 29 (Twenty Nine) x86_64 
  */
@@ -44,9 +44,8 @@ htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
 
     /* Projdeme cely seznam na danem indexu a zjistime, zda se v tabulce jiz
      * dane slovo nachazi */
-    while (htab_iterator_valid(it)) {
+    while (htab_iterator_valid(it) && it.idx == index) {
         if (!strcmp(htab_iterator_get_key(it), key)) {
-            it.ptr->data++;
             return it;
         }
 
@@ -60,6 +59,7 @@ htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
         return htab_end(t);
     }
 
+    /* Alokace a kontrola alokace pameti pro novy zaznam */
     it.ptr->key = malloc(strlen(key) + 1);
 
     if (htab_iterator_get_key(it) == NULL) {
@@ -67,8 +67,9 @@ htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
         return htab_end(t);
     }
 
+    /* Inicializace nove polozky a uprava dat tabulky */
     strcpy(it.ptr->key, key);
-    htab_iterator_set_value(it, 1);
+    htab_iterator_set_value(it, 0);
     it.ptr->next = t->array[index];
     t->array[index] = it.ptr;
     t->size++;
@@ -77,15 +78,21 @@ htab_iterator_t htab_lookup_add(htab_t *t, const char *key) {
 
 htab_iterator_t htab_begin(const htab_t *t) {
     htab_iterator_t begin;
+    begin.ptr = NULL;
+    begin.t = NULL;
+    begin.idx = 0;
 
-    if (t == NULL) {
-        begin.ptr = NULL;
-        begin.t = NULL;
-        begin.idx = 0;
-    } else {
-        begin.ptr = t->array[0];
-        begin.t = t;
-        begin.idx = 0;
+    if (t == NULL)
+        return begin;
+
+    begin.t = t;
+
+    /* Najdeme prvni validni zaznam v tabulce */
+    for (size_t i = 0; i < t->arr_size; i++) {
+        if ((begin.ptr = t->array[i]) != NULL) {
+            begin.idx = i;
+            break;
+        }
     }
 
     return begin;
@@ -108,16 +115,28 @@ htab_iterator_t htab_end(const htab_t *t) {
 }
 
 htab_iterator_t htab_iterator_next(htab_iterator_t it) {
-    if (!htab_iterator_valid(it)) {
-        if ((size_t)it.idx == htab_bucket_count(it.t) - 1)
-            return it;
-
-        it.idx++;
-        it.ptr = it.t->array[it.idx];
+    if (!htab_iterator_valid(it))
         return it;
+
+    /* V pripade, ze aktualni zaznam je v seznamu posledni */
+    if (it.ptr->next == NULL) {
+
+        /* Pokud se zaznam nenachazi na poslednim radku tabulky,... */
+        if ((size_t)it.idx < it.t->arr_size - 1)
+
+            /* ...najdeme nejblizsi dalsi validni zaznam v tabulce */
+            for (size_t i = it.idx + 1; i < it.t->arr_size; i++) {
+                if ((it.ptr = it.t->array[i]) != NULL) {
+                    it.idx = i;
+                    return it;
+                }
+            }
+
+        it = htab_end(it.t);
 
     } else {
         it.ptr = it.ptr->next;
-        return it;
     }
+    
+    return it;
 }

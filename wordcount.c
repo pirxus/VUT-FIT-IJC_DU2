@@ -1,7 +1,7 @@
 /**
  *	@file	wordcount.c
  *	@author	Simon Sedlacek, FIT
- *	@date	29.3.2019
+ *	@date	11.4.2019
  *	@note	Reseni: IJC-DU2, priklad 2)
  *	Prelozeno: gcc 8.3.1 - Fedora release 29 (Twenty Nine) x86_64 
  */
@@ -43,6 +43,8 @@ int main(void) {
             htab_free(table);
             return 1;
         }
+
+        htab_iterator_set_value(iterator, htab_iterator_get_value(iterator) + 1);
     }
 
 #ifdef TEST
@@ -62,14 +64,12 @@ int main(void) {
 
     /* Vypiseme slova a pocty */
     for (iterator = htab_begin(table);
-            !htab_iterator_equal(iterator, htab_end(table));
+            htab_iterator_valid(iterator);
             iterator = htab_iterator_next(iterator)) {
         
-        if (htab_iterator_valid(iterator)) {
-            printf("%s %d\n",
-                   htab_iterator_get_key(iterator),
-                   htab_iterator_get_value(iterator));
-        }
+        printf("%s    %d\n",
+               htab_iterator_get_key(iterator),
+               htab_iterator_get_value(iterator));
     }
 
     htab_free(table);

@@ -27,13 +27,10 @@ htab_t *htab_move(size_t n, htab_t *from) {
 
     /* Vsechny polozky z puvodni tabulky postupne vlozime do nove tabulky */
     for (iterator = htab_begin(from);
-            !htab_iterator_equal(htab_end(from), iterator);
+            htab_iterator_valid(iterator);
             iterator = htab_iterator_next(iterator)) {
 
-        if (!htab_iterator_valid(iterator))
-            continue;
-        else
-            check = htab_lookup_add(new, iterator.ptr->key);
+        check = htab_lookup_add(new, iterator.ptr->key);
         
         if (!htab_iterator_valid(check)) {
             fprintf(stderr, "Error: nepodarilo se presunout polozku "

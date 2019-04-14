@@ -32,7 +32,7 @@ wordcount-dynamic: htab.h wordcount.c io.c io.h libhtab.so
 wordcnt: wordcnt.o
 	g++ $(CPPFLAGS) $^ -o $@
 
-wordcnt.o: wordcount.cc
+wordcnt.o: wordcnt.cc
 	g++ $(CPPFLAGS) -c -o $@ $^
 
 
@@ -84,7 +84,17 @@ htab_free.o: htab_free.c htab_private.h
 	gcc $(CFLAGS) -c $<   
 htab_clear.o: htab_clear.c htab_private.h
 	gcc $(CFLAGS) -c $<
-htab_iterator.o: htab_iterator.c htab_private.h
+htab_iterator_value.o: htab_iterator_value.c htab_private.h
+	gcc $(CFLAGS) -c $<
+htab_iterator_test.o: htab_iterator_test.c htab_private.h
+	gcc $(CFLAGS) -c $<
+htab_iterator_next.o: htab_iterator_next.c htab_private.h
+	gcc $(CFLAGS) -c $<
+htab_iterator_begin.o: htab_iterator_begin.c htab_private.h
+	gcc $(CFLAGS) -c $<
+htab_iterator_end.o: htab_iterator_end.c htab_private.h
+	gcc $(CFLAGS) -c $<
+htab_iterator_get_key.o: htab_iterator_get_key.c htab_private.h
 	gcc $(CFLAGS) -c $<
 
 # dynamic
@@ -102,7 +112,17 @@ htab_free-s.o: htab_free.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
 htab_clear-s.o: htab_clear.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
-htab_iterator-s.o: htab_iterator.c htab_private.h
+htab_iterator_value-s.o: htab_iterator_value.c htab_private.h
+	gcc $(CFLAGS) -fPIC -c $< -o $@
+htab_iterator_test-s.o: htab_iterator_test.c htab_private.h
+	gcc $(CFLAGS) -fPIC -c $< -o $@
+htab_iterator_next-s.o: htab_iterator_next.c htab_private.h
+	gcc $(CFLAGS) -fPIC -c $< -o $@
+htab_iterator_begin-s.o: htab_iterator_begin.c htab_private.h
+	gcc $(CFLAGS) -fPIC -c $< -o $@
+htab_iterator_end-s.o: htab_iterator_end.c htab_private.h
+	gcc $(CFLAGS) -fPIC -c $< -o $@
+htab_iterator_get_key-s.o: htab_iterator_get_key.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
 
 

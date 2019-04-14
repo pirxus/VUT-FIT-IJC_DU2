@@ -11,6 +11,11 @@
 #include "htab_private.h"
 
 htab_t *htab_init(size_t n) {
+    if (n == 0) {
+        fprintf(stderr, "Error: tabulka musi mit alespon jeden radek\n");
+        return NULL;
+    }
+
     htab_t *new = malloc(sizeof(htab_t) + sizeof(struct htab_item *) * n);
 
     if (new == NULL) {

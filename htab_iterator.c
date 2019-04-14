@@ -1,5 +1,5 @@
 /**
- *	@file	htab_iterator_get.c
+ *	@file	htab_iterator.c
  *	@author	Simon Sedlacek, FIT
  *	@date	11.4.2019
  *	@note	Reseni: IJC-DU2, priklad 2)

@@ -15,8 +15,17 @@
 
 
 #define WORD_LIMIT 128
-#define ARRAY_SIZE 100
-#define NEW_ARRAY_SIZE 200 
+
+/**
+ * @brief Velikost hashovaci tabulky je dana kompromisem mezi rychlosti - vyhybani
+ * se kolizim - a narocnosti na pamet. Zvolil jsem proto velikost 30011 bucketu,
+ * protoze se jedna o zhruba horni hranici poctu hesel v beznem literarnim dile.
+ * Dalsim zvysovanim limitu sice dosahneme vetsi rychlosti, avsak ani u mnozstvi
+ * hesel dosahujicich cisel jako 400000 uz zlepseni neni natolik dramaticke, aby se
+ * pro bezne ucely vyplatilo limit zvysovat.
+ */
+#define ARRAY_SIZE 30011
+#define NEW_ARRAY_SIZE 50011 
 
 int main(void) {
 

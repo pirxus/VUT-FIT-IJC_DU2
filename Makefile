@@ -13,6 +13,7 @@ all: tail tail2 wordcount wordcount-dynamic
 static: wordcount
 dynamic: wordcount-dynamic
 
+
 #-------------------------------------------------
 # WORDCOUNT
 #-------------------------------------------------
@@ -20,11 +21,11 @@ dynamic: wordcount-dynamic
 # C wordcount static
 wordcount: htab.h wordcount.c io.c io.h libhtab.a	
 	ranlib libhtab.a
-	gcc $(CFLAGS) -static wordcount.c io.c libhtab.a -o $@
+	gcc $(CFLAGS) -static wordcount.c io.c -L. -lhtab -o $@
 
 # C wordcount dynamic
 wordcount-dynamic: htab.h wordcount.c io.c io.h libhtab.so
-	gcc $(CFLAGS) wordcount.c io.c libhtab.so -o $@
+	gcc $(CFLAGS) wordcount.c io.c -L. -lhtab -o $@
 
 
 # CPP wordcount
@@ -61,7 +62,7 @@ tail.o: tail.c
 
 .PHONY: clean
 clean:
-	rm -f *.o tail tail2 wordcnt wordcount *.a *.so
+	rm -f *.o tail tail2 wordcnt wordcount wordcount-dynamic *.a *.so
 
 
 #-------------------------------------------------
@@ -103,7 +104,6 @@ htab_clear-s.o: htab_clear.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
 htab_iterator-s.o: htab_iterator.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
-
 
 
 #-------------------------------------------------

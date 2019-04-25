@@ -7,11 +7,11 @@
  */
 
 #include <stdlib.h>
+#include <assert.h>
 #include "htab.h"
 #include "htab_private.h"
 
 const char *htab_iterator_get_key(htab_iterator_t it) {
-    if (it.ptr == NULL)
-        return NULL;
+    assert(it.ptr != NULL);
     return it.ptr->key;
 }

@@ -6,8 +6,8 @@
 #  BRIEF:  Makefile pro preklad druheho domaciho ukolu z predmetu IJC.
 #  NOTE:   Reseni: IJC-DU2
 #-------------------------------------------------
-CFLAGS= -std=c99 -O2 -Wall -Wextra -pedantic -g
 CPPFLAGS= -std=c++11 -O2 -Wall -Wextra -pedantic -g
+CFLAGS= -std=c99 -O2 -Wall -Wextra -pedantic -g
 
 all: tail tail2 wordcount wordcount-dynamic
 static: wordcount
@@ -86,7 +86,7 @@ htab_clear.o: htab_clear.c htab_private.h
 	gcc $(CFLAGS) -c $<
 htab_iterator_value.o: htab_iterator_value.c htab_private.h
 	gcc $(CFLAGS) -c $<
-htab_iterator_test.o: htab_iterator_test.c htab_private.h
+htab.o: htab.c htab_private.h
 	gcc $(CFLAGS) -c $<
 htab_iterator_next.o: htab_iterator_next.c htab_private.h
 	gcc $(CFLAGS) -c $<
@@ -116,7 +116,7 @@ htab_clear-s.o: htab_clear.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
 htab_iterator_value-s.o: htab_iterator_value.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
-htab_iterator_test-s.o: htab_iterator_test.c htab_private.h
+htab-s.o: htab.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
 htab_iterator_next-s.o: htab_iterator_next.c htab_private.h
 	gcc $(CFLAGS) -fPIC -c $< -o $@
@@ -135,9 +135,9 @@ htab_lookup_add-s.o: htab_lookup_add.c htab_private.h
 #-------------------------------------------------
 
 # static
-libhtab.a: htab_hash.o htab_init.o htab_move.o htab_size.o htab_bucket_count.o htab_free.o htab_clear.o htab_iterator_test.o htab_iterator_value.o htab_iterator_next.o htab_iterator_begin.o htab_iterator_end.o htab_iterator_get_key.o htab_lookup_add.o
+libhtab.a: htab_hash.o htab_init.o htab_move.o htab_size.o htab_bucket_count.o htab_free.o htab_clear.o htab.o htab_iterator_value.o htab_iterator_next.o htab_iterator_begin.o htab_iterator_end.o htab_iterator_get_key.o htab_lookup_add.o
 	ar rcv $@ $^
 
 # dynamic
-libhtab.so: htab_hash-s.o htab_init-s.o htab_move-s.o htab_size-s.o htab_bucket_count-s.o htab_free-s.o htab_clear-s.o htab_iterator_test-s.o htab_iterator_value-s.o htab_iterator_next-s.o htab_iterator_begin-s.o htab_iterator_end-s.o htab_iterator_get_key-s.o htab_lookup_add-s.o
+libhtab.so: htab_hash-s.o htab_init-s.o htab_move-s.o htab_size-s.o htab_bucket_count-s.o htab_free-s.o htab_clear-s.o htab-s.o htab_iterator_value-s.o htab_iterator_next-s.o htab_iterator_begin-s.o htab_iterator_end-s.o htab_iterator_get_key-s.o htab_lookup_add-s.o
 	gcc $(CFLAGS) -shared -o $@ $^

@@ -11,8 +11,8 @@
 #include "htab_private.h"
 
 htab_iterator_t htab_end(const htab_t *t) {
-    htab_iterator_t end;
 
+    htab_iterator_t end;
     end.ptr = NULL;
 
     if (t == NULL) {
@@ -21,6 +21,11 @@ htab_iterator_t htab_end(const htab_t *t) {
     } else {
         end.t = t;
         end.idx = t->arr_size - 1;
+        for (int i = t->arr_size - 1; i >= 0; i--) {
+            end.idx = i;
+            if (t->array[i] != NULL)
+                break;
+        }
     }
 
     return end;

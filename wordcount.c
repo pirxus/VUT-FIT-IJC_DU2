@@ -76,7 +76,7 @@ int main(void) {
             htab_iterator_valid(iterator);
             iterator = htab_iterator_next(iterator)) {
         
-        printf("%s    %d\n",
+        printf("%s\t%d\n",
                htab_iterator_get_key(iterator),
                htab_iterator_get_value(iterator));
     }

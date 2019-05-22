@@ -40,7 +40,6 @@ htab_t *htab_move(size_t n, htab_t *from) {
         }
 
         htab_iterator_set_value(check, htab_iterator_get_value(iterator));
-        new->size++;
     }
 
     htab_clear(from);
